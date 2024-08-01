@@ -1,5 +1,4 @@
-namespace WeatherForecast.ApplicationServices;
-
+namespace WeatherForecast.Services.WeatherDataProviderService;
 public class WeatherDataProviderService :IWeatherDataProviderService
 {
     public WeatherDataProviderService() { }

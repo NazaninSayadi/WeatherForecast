@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using WeatherForecast.ApplicationServices;
+using WeatherForecast.Services.WeatherDataProviderService;
 
 namespace WeatherForecast.Controllers;
 
