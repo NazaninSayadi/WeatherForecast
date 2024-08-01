@@ -24,13 +24,14 @@ public class DatabaseInitializer
             connection.Open();
 
             var createDatabaseScript = @"IF NOT EXISTS 
-                                     (SELECT * FROM sys.databases WHERE name = 'WeatherForecast') 
-                                     BEGIN 
-                                     CREATE DATABASE WeatherForecast; 
-                                     END";
+                                            (SELECT * FROM sys.databases WHERE name = 'WeatherForecast') 
+                                         BEGIN 
+                                            CREATE DATABASE WeatherForecast; 
+                                         END";
             
             var createTableScript = @"USE WeatherForecast;
-                                      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='WeatherData' AND xtype='U')
+                                      IF NOT EXISTS 
+                                          (SELECT * FROM sysobjects WHERE name='WeatherData' AND xtype='U')
                                       BEGIN
                                           CREATE TABLE WeatherData (
                                               Id INT IDENTITY(1,1) PRIMARY KEY,
