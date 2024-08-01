@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Memory;
 using WeatherForecast.Data;
 using WeatherForecast.Services.ExternalWeatherService;
 using WeatherForecast.Services.WeatherDataProviderService;
@@ -9,9 +10,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IWeatherDataProviderService, WeatherDataProviderService>();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
-builder.Services.AddScoped<IWeatherDataCommandRepository, WeatherDataRepository>(sp => new WeatherDataRepository(""));
-builder.Services.AddScoped<IWeatherDataQueryRepository, WeatherDataRepository>(sp => new WeatherDataRepository(""));
+builder.Services.AddScoped<IWeatherDataCommandRepository, WeatherDataRepository>(sp => new WeatherDataRepository(builder.Configuration.GetConnectionString("Command&QueryConnectionString")));
+builder.Services.AddScoped<IWeatherDataQueryRepository, WeatherDataRepository>(sp => new WeatherDataRepository(builder.Configuration.GetConnectionString("Command&QueryConnectionString")));
+builder.Services.AddSingleton<DatabaseInitializer>(sp =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    return new DatabaseInitializer(connectionString);
+});
 
 builder.Services.AddHttpClient("WeatherForecast", client =>
     {
@@ -20,6 +27,10 @@ builder.Services.AddHttpClient("WeatherForecast", client =>
     });
 
 var app = builder.Build();
+
+using var scope = app.Services.CreateScope();
+var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+databaseInitializer.InitializeDatabase();
 
 if (app.Environment.IsDevelopment())
 {

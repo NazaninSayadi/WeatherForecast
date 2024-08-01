@@ -17,16 +17,16 @@ public class WeatherDataRepository : IWeatherDataQueryRepository,IWeatherDataCom
         await using var connection = new SqlConnection(_connectionString);
         await connection.ExecuteAsync(
             @"IF EXISTS 
-                 (SELECT 1 FROM WeatherData WHERE Id = 1) 
-                 UPDATE WeatherData SET JsonData = @JsonData WHERE Id = 1 
-                 ELSE 
-                 INSERT INTO WeatherData (Id, JsonData) 
-                 VALUES (1, @JsonData)", new { JsonData = jsonData });
+             (SELECT 1 FROM [dbo].[WeatherData] WHERE Id = 1) 
+             UPDATE [dbo].[WeatherData] SET JsonData = @JsonData WHERE Id = 1 
+             ELSE 
+             INSERT INTO [dbo].[WeatherData] (JsonData) 
+             VALUES (@JsonData)", new { JsonData = jsonData });
     }
 
     public async Task<string?> GetAsync()
     {
         await using var connection = new SqlConnection(_connectionString);
-        return await connection.QueryFirstOrDefaultAsync<string>("SELECT JsonData FROM WeatherData WHERE Id = 1");
+        return await connection.QueryFirstOrDefaultAsync<string>("SELECT JsonData FROM [dbo].[WeatherData] WHERE Id = 1");
     }
 }

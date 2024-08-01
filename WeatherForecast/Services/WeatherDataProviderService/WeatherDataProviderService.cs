@@ -39,16 +39,23 @@ public class WeatherDataProviderService : IWeatherDataProviderService
         }
         catch (Exception ex)
         {
-            if (_cache.TryGetValue(cacheKey, out string? cachedData))
+            try
             {
-                return cachedData;
-            }
+                if (_cache.TryGetValue(cacheKey, out string? cachedData))
+                {
+                    return cachedData;
+                }
 
-            if (await _weatherDataQueryRepository.GetAsync() is { } dbData)
+                if (await _weatherDataQueryRepository.GetAsync() is { } dbData)
+                {
+                    return dbData;
+                }
+            }
+            catch (Exception e)
             {
-                return dbData;
+                return null;
             }
-
+           
             return null;
         }
     }
